@@ -101,12 +101,17 @@ def add_data(update: Update, context: CallbackContext):
         update.message.reply_text("Url is not set, use /set_url command to update it", reply_markup=default_keyboard)
         return ConversationHandler.END
 
-    resp = requests.post(FINANCE_GOOGLE_SHEET_URL, data={'date': get_msk_date(),
-                                    'where': context.user_data["where"],
-                                    'sum': str(context.user_data["sum"]),
-                                    'data': context.user_data["data"],
-                                    'sheet': context.user_data["category"],
-                                    'color': get_color_from_context(context)})
+    try:
+        resp = requests.post(FINANCE_GOOGLE_SHEET_URL, data={'date': get_msk_date(),
+                                                             'where': context.user_data["where"],
+                                                             'sum': str(context.user_data["sum"]),
+                                                             'data': context.user_data["data"],
+                                                             'sheet': context.user_data["category"],
+                                                             'color': get_color_from_context(context)}, timeout=5)
+    except requests.exceptions.RequestException as e:
+        update.message.reply_text(str(e), reply_markup=default_keyboard)
+        return ConversationHandler.END
+
     if resp.status_code == 200 and resp.text == 'ok':
         update.message.reply_text("Successfully added!", reply_markup=default_keyboard)
     else:
@@ -196,6 +201,7 @@ def main():
 
     dispatcher.add_handler(CommandHandler(command="start", callback=start))
     dispatcher.add_handler(conversation_handler)
+    dispatcher.add_handler(set_url_handler)
     dispatcher.add_handler(MessageHandler(Filters.text, echo))
 
     updater.start_polling()
