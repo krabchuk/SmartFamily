@@ -98,7 +98,7 @@ def add_data(update: Update, context: CallbackContext):
     context.user_data['data'] = update.message.text
 
     if FINANCE_GOOGLE_SHEET_URL is None:
-        update.message.reply_text("Url is not set, use //set_url command to update it", reply_markup=default_keyboard)
+        update.message.reply_text("Url is not set, use /set_url command to update it", reply_markup=default_keyboard)
         return ConversationHandler.END
 
     resp = requests.post(FINANCE_GOOGLE_SHEET_URL, data={'date': get_msk_date(),
