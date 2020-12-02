@@ -84,9 +84,9 @@ def get_color_from_context(context):
                 return '#9fc5e8'
         elif context.user_data["category"] == taxi:
             if context.user_data["where"] == "Яндекс.Такси":
-                return '#ffd966'
+                return '#f1c232'
             elif context.user_data["where"] == "Яндекс.Драйв":
-                return '#666666'
+                return '#3d85c6'
             else:
                 return '#000000'
         elif context.user_data["category"] == clothes:
