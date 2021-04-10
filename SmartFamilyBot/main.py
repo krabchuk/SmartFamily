@@ -1,6 +1,7 @@
 from telegram import KeyboardButton, ReplyKeyboardMarkup, Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
 import requests
+import re
 
 import tokens
 from utils import *
@@ -101,8 +102,15 @@ def add_data(update: Update, context: CallbackContext):
         update.message.reply_text("Url is not set, use /set_url command to update it", reply_markup=default_keyboard)
         return ConversationHandler.END
 
+    date = get_msk_date()
+    text = context.user_data['data']
+    b = text.find('(')
+    e = text.find(')')
+    if b != -1 and e != -1 and text[b + 1:e].isdigit():
+        date = text[b + 1:e] + '.' + get_msk_time().month
+
     try:
-        resp = requests.post(FINANCE_GOOGLE_SHEET_URL, data={'date': get_msk_date(),
+        resp = requests.post(FINANCE_GOOGLE_SHEET_URL, data={'date': date,
                                                              'where': context.user_data["where"],
                                                              'sum': str(context.user_data["sum"]),
                                                              'data': context.user_data["data"],
