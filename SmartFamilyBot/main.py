@@ -6,7 +6,11 @@ import re
 import tokens
 from utils import *
 
-FINANCE_GOOGLE_SHEET_URL = os.getenv('SMART_FAMILY_FINANCE_GOOGLE_SHEET_URL')
+try:
+    with open('.current_url') as f:
+        FINANCE_GOOGLE_SHEET_URL = f.readline().strip()
+except FileNotFoundError:
+    FINANCE_GOOGLE_SHEET_URL = None
 
 CHOOSE_CATEGORY, ADD_WHERE, ADD_SUM, ADD_DATA = range(4)
 SET_URL = 0
@@ -25,6 +29,11 @@ def start(update: Update, context: CallbackContext):
 @log_message
 @check_user
 def add_expenses(update: Update, context: CallbackContext):
+
+    if FINANCE_GOOGLE_SHEET_URL is None:
+        update.message.reply_text("Url is not set, use /set_url command to update it", reply_markup=default_keyboard)
+        return ConversationHandler.END
+
     keyboard = [
         [KeyboardButton(regular),
          KeyboardButton(food),
@@ -98,10 +107,6 @@ def add_sum(update: Update, context: CallbackContext):
 def add_data(update: Update, context: CallbackContext):
     context.user_data['data'] = update.message.text
 
-    if FINANCE_GOOGLE_SHEET_URL is None:
-        update.message.reply_text("Url is not set, use /set_url command to update it", reply_markup=default_keyboard)
-        return ConversationHandler.END
-
     date = get_msk_date()
     text = context.user_data['data']
     b = text.find('(')
@@ -142,6 +147,8 @@ def sheet_url_start(update: Update, context: CallbackContext):
 def sheet_url_set(update: Update, context: CallbackContext):
     global FINANCE_GOOGLE_SHEET_URL
     FINANCE_GOOGLE_SHEET_URL = update.message.text
+    with open('.current_url', 'w') as f:
+        f.write(update.message.text)
     update.message.reply_text('Url was set to "' + FINANCE_GOOGLE_SHEET_URL + '"')
 
     return ConversationHandler.END
