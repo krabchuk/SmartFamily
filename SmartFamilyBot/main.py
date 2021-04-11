@@ -118,7 +118,7 @@ def add_data(update: Update, context: CallbackContext):
         resp = requests.post(FINANCE_GOOGLE_SHEET_URL, data={'date': date,
                                                              'where': context.user_data["where"],
                                                              'sum': str(context.user_data["sum"]),
-                                                             'data': context.user_data["data"],
+                                                             'data': context.user_data["data"][:b],
                                                              'sheet': context.user_data["category"],
                                                              'color': get_color_from_context(context)}, timeout=5)
     except requests.exceptions.RequestException as e:
@@ -208,9 +208,9 @@ def main():
         name="set_url"
     )
 
-    dispatcher.add_handler(CommandHandler(command="start", callback=start))
     dispatcher.add_handler(conversation_handler)
     dispatcher.add_handler(set_url_handler)
+    dispatcher.add_handler(CommandHandler(command="start", callback=start))
 
     updater.start_polling()
     updater.idle()
