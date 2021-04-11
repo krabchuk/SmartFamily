@@ -112,7 +112,7 @@ def add_data(update: Update, context: CallbackContext):
     b = text.find('(')
     e = text.find(')')
     if b != -1 and e != -1 and text[b + 1:e].isdigit():
-        date = text[b + 1:e] + '.' + get_msk_time().month
+        date = text[b + 1:e] + '.' + str(get_msk_time().month)
 
     try:
         resp = requests.post(FINANCE_GOOGLE_SHEET_URL, data={'date': date,
