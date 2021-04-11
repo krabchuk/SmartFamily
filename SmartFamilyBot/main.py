@@ -131,12 +131,6 @@ def add_data(update: Update, context: CallbackContext):
 
 @log_message
 @check_user
-def echo(update: Update, context: CallbackContext):
-    update.message.reply_text(update.message.text)
-
-
-@log_message
-@check_user
 def sheet_url_start(update: Update, context: CallbackContext):
     update.message.reply_text("Send new Google Sheet url:")
 
@@ -210,7 +204,6 @@ def main():
     dispatcher.add_handler(CommandHandler(command="start", callback=start))
     dispatcher.add_handler(conversation_handler)
     dispatcher.add_handler(set_url_handler)
-    dispatcher.add_handler(MessageHandler(Filters.text, echo))
 
     updater.start_polling()
     updater.idle()
