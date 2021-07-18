@@ -121,12 +121,18 @@ def add_data(update: Update, context: CallbackContext):
                                                              'data': context.user_data["data"][:b],
                                                              'sheet': context.user_data["category"],
                                                              'color': get_color_from_context(context)}, timeout=5)
+        respExpences = requests.get(FINANCE_GOOGLE_SHEET_URL,
+                                    params={'row': get_category_row(context.user_data["category"])}, timeout=5)
     except requests.exceptions.RequestException as e:
         update.message.reply_text(str(e), reply_markup=default_keyboard)
         return ConversationHandler.END
 
-    if resp.status_code == 200 and resp.text == 'ok':
-        update.message.reply_text("Successfully added!", reply_markup=default_keyboard)
+    if resp.status_code == 200 and resp.text == 'ok' and respExpences.status_code == 200:
+        update.message.reply_text("Successfully added!")
+        update.message.reply_text("Expenses in {}: {}\nTotal expenses: {}".format(context.user_data["category"],
+                                                                                  respExpences.text.split(' ')[0],
+                                                                                  respExpences.text.split(' ')[1]),
+                                  reply_markup=default_keyboard)
     else:
         update.message.reply_text(f"Something went wrong, resp = {resp.status_code},"
                                   f" resp_message = {resp.content}", reply_markup=default_keyboard)

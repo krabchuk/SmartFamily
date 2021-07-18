@@ -24,6 +24,23 @@ earnings = "💰 💳"
 add_expenses_button = "Add expenses 💸"
 
 
+def get_category_row(category):
+    if category == regular:
+        return 2
+    if category == food:
+        return 3
+    if category == cafe:
+        return 4
+    if category == clothes:
+        return 5
+    if category == meds:
+        return 6
+    if category == taxi:
+        return 7
+    if category == smth:
+        return 8
+
+
 def has_access(user_id):
     if user_id in smart_family_users:
         return True
